@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block body_class %}template-generic{% endblock %}
+
+{% block content %}
+    <div>Gets here.</div>
+    {% if self.body %}
+    <div>And here too</div>
+        <div class="body-content">
+            {% include "home/includes/streamfield.html" with content=self.body %}
+        </div>
+    {% endif %}
+
+{% endblock %}

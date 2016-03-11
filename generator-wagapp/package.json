@@ -1,0 +1,27 @@
+{
+  "name": "generator-wagapp",
+  "version": "0.0.0",
+  "description": "A django wagtail app generator",
+  "homepage": "none",
+  "author": {
+    "name": "Ryan Hurst",
+    "email": "captainhurst@gmail.com",
+    "url": "none"
+  },
+  "files": [
+    "app"
+  ],
+  "main": "generators/app/index.js",
+  "dependencies": {
+    "yeoman-generator": "^0.21.1",
+    "chalk": "^1.0.0",
+    "yosay": "^1.0.2"
+  },
+  "devDependencies": {
+    "mkdirp": "^0.5.1",
+    "yeoman-assert": "^2.0.0"
+  },
+  "keywords": [
+    "yeoman-generator"
+  ]
+}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags static %}
+
+{% block body_class %}template-generic{% endblock %}
+
+{% block content %}
+    {%for p in page %}
+    <p><a href="{% pageurl p %}">{{p}}</a></p>
+
+    <div>
+      {% if p.tags.all %}
+            Tags: 
+                {% for tag in p.tags.all %}
+                    <a href="{% url 'generic_page:tag' tag.slug %}">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+        {% endif %}
+
+    </div>
+
+    <div>
+      {% if p.categories.all %}
+        Posted in 
+        {% for cat in p.categories.all %}
+            <a href="{% url 'generic_page:category' cat.category.slug %}">{{ cat.category.name }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      {% endif %}
+      
+
+    </div>
+    {%endfor%}
+{% endblock %}
