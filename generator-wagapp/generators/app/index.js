@@ -17,6 +17,18 @@ function capitalizeFirstLetter(str){
    return splitStr.join(''); 
 }
 
+function snakeCaseString(str){
+   var splitStr = str.toLowerCase().split(' ');
+   for (var i = 0; i < splitStr.length; i++) {
+       // You do not need to check if i is larger than splitStr length, as your for does that for you
+       // Assign it back to the array
+       splitStr[i] = splitStr[i].toLowerCase();     
+   }
+   // Directly return the joined string
+   console.log("Snake Case Test", splitStr.join('_'));
+   return splitStr.join('_'); 
+}
+
 
 
 
@@ -47,6 +59,7 @@ prompting: function() {
         answers.pagenamelower = capitalizeFirstLetter(answers.pagename).toLowerCase();
         answers.slug          = capitalizeFirstLetter(answers.slug).toLowerCase();
         answers.directoryname = answers.pagenamelower + '_page';
+        answers.snakepagename = snakeCaseString(answers.pagename);
         this.props = answers;
         this.log(answers.pagenamelower);
         this.log(answers.slug)
@@ -60,24 +73,72 @@ prompting: function() {
   app: function(){
       //Model file
       var directoryname = this.props.directoryname;
+      var snakepagename = this.props.snakepagename;
       mkdirp(directoryname);
       mkdirp(directoryname+'/templates');
       mkdirp(directoryname+'/templates/'+directoryname);
       mkdirp(directoryname+'/migrations');
       this.copy('_migrations/__init__.py', directoryname+'/migrations/__init__.py');
       this.copy('__init__.py', directoryname + '/__init__.py');
+      
+      // Makes Models Py
       this.fs.copyTpl(
         this.templatePath('_models.py'),
         this.destinationPath(directoryname+'/models.py'), {
           pagenamecamel: this.props.pagenamecamel,
-          pagenamelower: this.props.pagenamelower
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
         }
       );
+
+      // Makes Urls Py
       this.fs.copyTpl(
         this.templatePath('_urls.py'),
         this.destinationPath(directoryname+'/urls.py'), {
           slug: this.props.slug,
-          pagenamelower: this.props.pagenamelower
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
+        }
+      );
+
+      // Makes Views
+      this.fs.copyTpl(
+        this.templatePath('_views.py'),
+        this.destinationPath(directoryname+'/views.py'), {
+          pagenamecamel: this.props.pagenamecamel,
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
+
+        }
+      );
+
+      // Makes Apps
+      this.fs.copyTpl(
+        this.templatePath('_apps.py'),
+        this.destinationPath(directoryname+'/apps.py'), {
+          pagenamecamel: this.props.pagenamecamel,
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
+        }
+      );
+
+      // Makes index template
+      this.fs.copyTpl(
+        this.templatePath('_templates/_generic_page/_generic_index_page.html'),
+        this.destinationPath(directoryname+'/templates/'+directoryname +'/'+ snakepagename +'_index_page.html'), {
+          pagenamecamel: this.props.pagenamecamel,
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
+
+        }
+      );
+
+      this.fs.copyTpl(
+        this.templatePath('_templates/_generic_page/_generic_page.html'),
+        this.destinationPath(directoryname+'/templates/'+directoryname +'/'+ snakepagename +'_page.html'), {
+          pagenamecamel: this.props.pagenamecamel,
+          pagenamelower: this.props.pagenamelower,
+          pagename: this.props.pagename
 
         }
       );

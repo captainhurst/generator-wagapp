@@ -63,9 +63,9 @@ class <%= pagenamecamel %>IndexPage(Page):
       gp = gp.order_by(
             'title'
         ).select_related('owner').prefetch_related(
-            'tagged_items__tag',
-            'categories',
-            'categories__category',
+            '<%= pagenamelower %>_tagged_items__tag',
+            '<%= pagenamelower %>_categories',
+            '<%= pagenamelower %>_categories__category',
         )
 
       return gp
@@ -111,7 +111,7 @@ class <%= pagenamecamel %>IndexPage(Page):
 
         if page is not None:
             
-            paginator = Paginator(page, page_size)  # Show 20 <%= pagenamecamel %> Pages per page
+            paginator = Paginator(page, page_size)  # Show 20 <%= pagename %> Pages per page
 
             try:
                 gp = paginator.page(page)
@@ -126,7 +126,6 @@ class <%= pagenamecamel %>IndexPage(Page):
         context['tag'] = tag
         context['author'] = author
         context = get_page_context(context)
-        print("Context:", context)
 
         return context
 
@@ -137,7 +136,7 @@ class <%= pagenamecamel %>IndexPage(Page):
 
 
 class <%= pagenamecamel %>PageTag(TaggedItemBase):
-    content_object = ParentalKey('<%= pagenamelower %>_page.<%= pagenamecamel %>Page', related_name='tagged_items')
+    content_object = ParentalKey('<%= pagenamelower %>_page.<%= pagenamecamel %>Page', related_name='<%= pagenamelower %>_tagged_items')
 
 @register_snippet
 class <%= pagenamecamel %>Category(models.Model):
@@ -148,7 +147,7 @@ class <%= pagenamecamel %>Category(models.Model):
                           )
     slug = models.SlugField(unique=True, max_length=80)
     parent = models.ForeignKey(
-        'self', blank=True, null=True, related_name="children",
+        'self', blank=True, null=True, related_name="<%= pagenamelower %>_children",
         help_text=_(
             'Categories, unlike tags, can have a hierarchy. You might have a '
             'Jazz category, and under that have children categories for Bebop'
@@ -158,8 +157,8 @@ class <%= pagenamecamel %>Category(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = _("Page Category")
-        verbose_name_plural = _("Page Categories")
+        verbose_name = _("<%= pagenamecamel %> Page Category")
+        verbose_name_plural = _("<%= pagenamecamel %> Page Categories")
 
     panels = [
         FieldPanel('name'),
@@ -186,10 +185,10 @@ class <%= pagenamecamel %>Category(models.Model):
 class Category<%= pagenamecamel %>Page(models.Model):
     category = models.ForeignKey(
                                   <%= pagenamecamel %>Category, 
-                                  related_name="+", 
+                                  related_name="<%= pagenamelower %>+", 
                                   verbose_name=_('Category')
                                 )
-    page = ParentalKey('<%= pagenamecamel %>Page', related_name='categories')
+    page = ParentalKey('<%= pagenamecamel %>Page', related_name='<%= pagenamelower %>_categories')
     
     panels = [
         FieldPanel('category'),
@@ -213,17 +212,17 @@ class <%= pagenamecamel %>Page(Page):
         limit_choices_to=limit_author_choices,
         verbose_name=_('Author'),
         on_delete=models.SET_NULL,
-        related_name='author_pages',
+        related_name='<%= pagenamelower %>_author_pages',
     )
   
   class Meta:
-    verbose_name = "Standard Page"
+    verbose_name = "<%= pagenamecamel %> Page"
 
 <%= pagenamecamel %>Page.content_panels = [
   FieldPanel('title', classname="full title"),
   MultiFieldPanel([
         FieldPanel('tags'),
-        InlinePanel('categories', label=_("Categories")),
+        InlinePanel('<%= pagenamelower %>_categories', label=_("Categories")),
     ], heading="Tags and Categories"),
   StreamFieldPanel('body'),
 ]
